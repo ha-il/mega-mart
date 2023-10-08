@@ -27,27 +27,27 @@
   ],
   "coupons": [
     {
-      "coupon": "A1B2C3",
+      "code": "A1B2C3",
       "rank": "good"
     },
     {
-      "coupon": "X5Y6Z7",
+      "code": "X5Y6Z7",
       "rank": "bad"
     },
     {
-      "coupon": "M8N9O0",
+      "code": "M8N9O0",
       "rank": "best"
     },
     {
-      "coupon": "P1Q2R3",
+      "code": "P1Q2R3",
       "rank": "good"
     },
     {
-      "coupon": "S4T5U6",
+      "code": "S4T5U6",
       "rank": "bad"
     },
     {
-      "coupon": "V7W8X9",
+      "code": "V7W8X9",
       "rank": "best"
     }
   ]
