@@ -1,0 +1,54 @@
+{
+  "emails": [
+    {
+      "email": "example1@example.com",
+      "rec_count": 2
+    },
+    {
+      "email": "example2@example.com",
+      "rec_count": 16
+    },
+    {
+      "email": "example3@example.com",
+      "rec_count": 1
+    },
+    {
+      "email": "example4@example.com",
+      "rec_count": 0
+    },
+    {
+      "email": "example5@example.com",
+      "rec_count": 25
+    },
+    {
+      "email": "example6@example.com",
+      "rec_count": 0
+    }
+  ],
+  "coupons": [
+    {
+      "coupon": "A1B2C3",
+      "rank": "good"
+    },
+    {
+      "coupon": "X5Y6Z7",
+      "rank": "bad"
+    },
+    {
+      "coupon": "M8N9O0",
+      "rank": "best"
+    },
+    {
+      "coupon": "P1Q2R3",
+      "rank": "good"
+    },
+    {
+      "coupon": "S4T5U6",
+      "rank": "bad"
+    },
+    {
+      "coupon": "V7W8X9",
+      "rank": "best"
+    }
+  ]
+}
