@@ -13,4 +13,7 @@ module.exports = {
   },
   plugins: ["@typescript-eslint"],
   root: true,
+  rules: {
+    "@typescript-eslint/no-use-before-define": "off",
+  },
 };
