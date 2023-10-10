@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
+/* 핵심
+  1. DOM 업데이트와 비즈니스 규칙은 분리되어야 한다.
+  2. 전역 변수에 의존하면 안 된다.
+  3. 계산은 명시적 입력과 명시적 출력만으로 이뤄진다.
+*/
 interface Item {
   id: number;
   name: string;
@@ -10,7 +15,22 @@ interface Item {
 
 function HomePage() {
   const [items, setItems] = useState<Item[]>([]);
-  const [cart, setCart] = useState(0);
+  const [cart, setCart] = useState<Item[]>([]);
+
+  const calcTotal = (array: Item[]) =>
+    array.reduce((acc, cur) => acc + cur.price, 0);
+
+  const cartTotal = calcTotal(cart);
+
+  const handleButtonClick = (item: Item) => {
+    addItemToCart(item);
+  };
+
+  const addItemToCart = (item: Item) => {
+    setCart(addItem(cart, item));
+  };
+
+  const addItem = (array: Item[], item: Item) => [...array, item];
 
   useEffect(() => {
     const getItems = async () => {
@@ -21,15 +41,11 @@ function HomePage() {
     getItems();
   }, []);
 
-  const handleButtonClick = (price: number) => {
-    setCart((cur) => cur + price);
-  };
-
   return (
     <div className="App">
       <Header>
         <h1>MegaMart</h1>
-        <span>{cart}원</span>
+        <span>{cartTotal}원</span>
       </Header>
       <main>
         <Ul>
@@ -40,10 +56,7 @@ function HomePage() {
                 <span>{item.name}</span>
                 <span>{item.price}원</span>
               </div>
-              <Button
-                type="button"
-                onClick={() => handleButtonClick(item.price)}
-              >
+              <Button type="button" onClick={() => handleButtonClick(item)}>
                 장바구니 추가
               </Button>
             </Li>
