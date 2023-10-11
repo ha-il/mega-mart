@@ -17,20 +17,35 @@ function HomePage() {
   const [items, setItems] = useState<Item[]>([]);
   const [cart, setCart] = useState<Item[]>([]);
 
+  // 계산
   const calcTotal = (array: Item[]) =>
     array.reduce((acc, cur) => acc + cur.price, 0);
+  // 계산
+  const calcTax = (price: number) => price * 0.1;
 
-  const cartTotal = calcTotal(cart);
+  // 액션: cart라는 상태를 읽고 있으니까.
+  const cartTotal = calcTotal(cart) + calcTax(calcTotal(cart));
 
+  // 액션: 하위 함수가 액션이기 때문에
   const handleButtonClick = (item: Item) => {
     addItemToCart(item);
   };
 
+  // 액션: DOM을 변경하기 때문에
   const addItemToCart = (item: Item) => {
     setCart(addItem(cart, item));
   };
 
+  // 계산
   const addItem = (array: Item[], item: Item) => [...array, item];
+
+  // 액션: cartTotal이라는 상태를 읽고 있으니까.
+  const updateShippingIcons = (price: number) =>
+    getsFreeShipping(price, cartTotal);
+
+  // 계산
+  const getsFreeShipping = (total: number, price: number) =>
+    total + price >= 20000;
 
   useEffect(() => {
     const getItems = async () => {
@@ -55,6 +70,7 @@ function HomePage() {
                 <span>{item.emoji}</span>
                 <span>{item.name}</span>
                 <span>{item.price}원</span>
+                {updateShippingIcons(item.price) && <span>무료 배송!</span>}
               </div>
               <Button type="button" onClick={() => handleButtonClick(item)}>
                 장바구니 추가
