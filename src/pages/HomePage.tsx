@@ -6,6 +6,11 @@ import styled from "styled-components";
   2. 전역 변수에 의존하면 안 된다.
   3. 계산은 명시적 입력과 명시적 출력만으로 이뤄진다.
 */
+
+/* 원칙
+  1. 암묵적 입력과 출력은 적을수록 좋다.
+  2. 설계는 엉켜있는 코드를 푸는 것이다.
+*/
 interface Item {
   id: number;
   name: string;
@@ -15,37 +20,49 @@ interface Item {
 
 function HomePage() {
   const [items, setItems] = useState<Item[]>([]);
-  const [cart, setCart] = useState<Item[]>([]);
+  const [cartState, setCartState] = useState<Item[]>([]);
 
-  // 계산
-  const calcTotal = (array: Item[]) =>
-    array.reduce((acc, cur) => acc + cur.price, 0);
-  // 계산
-  const calcTax = (price: number) => price * 0.1;
+  // 유틸:
+  const addElementLast = <T,>(array: T[], elem: T) => [...array, elem];
 
-  // 액션: cart라는 상태를 읽고 있으니까.
-  const cartTotal = calcTotal(cart) + calcTax(calcTotal(cart));
+  // 계산:
+  // C: 카트에 대한 구조를 알아야 함
+  const addItem = (cart: Item[], item: Item) => addElementLast(cart, item);
+
+  // 액션: DOM을 변경하기 때문에
+  const addItemToCart = (item: Item) => {
+    const shoppingCart = addItem(cartState, item);
+    setCartState(shoppingCart);
+  };
 
   // 액션: 하위 함수가 액션이기 때문에
   const handleButtonClick = (item: Item) => {
     addItemToCart(item);
   };
 
+  // 계산: C I B
+  // C: 카트에 대한 구조를 알아야 함
+  // I: 상품에 대한 구조를 알아야 함
+  // B: 합계를 결정하는 비즈니스 규칙을 알아야 함(?)
+  const calcTotal = (cart: Item[]) =>
+    cart.reduce((acc, cur) => acc + cur.price, 0);
+
+  // 액션: cart를 참조하고 있으므로
+  const cartTotal = calcTotal(cartState);
+
+  // 계산:
+  // B: 세금 계산이라는 비즈니스 규칙을 알아야 함
+  const calcTax = (price: number) => price * 0.1;
+
   // 액션: DOM을 변경하기 때문에
-  const addItemToCart = (item: Item) => {
-    setCart(addItem(cart, item));
-  };
+  const updateTaxDom = (total: number) => calcTax(total);
 
-  // 계산
-  const addItem = (array: Item[], item: Item) => [...array, item];
+  // 계산:
+  // B: 2만원 이상 무료배송이라는 비즈니스 규칙을 알아야 함
+  const getsFreeShipping = (cart: Item[]) => calcTotal(cart) >= 20000;
 
-  // 액션: cartTotal이라는 상태를 읽고 있으니까.
-  const updateShippingIcons = (price: number) =>
-    getsFreeShipping(price, cartTotal);
-
-  // 계산
-  const getsFreeShipping = (total: number, price: number) =>
-    total + price >= 20000;
+  // 액션: DOM을 변경하기 때문에
+  const updateShippingIcons = (cart: Item[]) => getsFreeShipping([...cart]);
 
   useEffect(() => {
     const getItems = async () => {
@@ -60,9 +77,14 @@ function HomePage() {
     <div className="App">
       <Header>
         <h1>MegaMart</h1>
-        <span>{cartTotal}원</span>
+        <div>
+          {updateShippingIcons(cartState) && <div>무료 배송!</div>}
+          <span>{cartTotal}원</span>
+          <div>부가세: {updateTaxDom(cartTotal)}원</div>
+        </div>
       </Header>
-      <main>
+      <Main>
+        <h2>2만원 이상 구매시 무료 배송!</h2>
         <Ul>
           {items.map((item) => (
             <Li key={item.id}>
@@ -70,7 +92,6 @@ function HomePage() {
                 <span>{item.emoji}</span>
                 <span>{item.name}</span>
                 <span>{item.price}원</span>
-                {updateShippingIcons(item.price) && <span>무료 배송!</span>}
               </div>
               <Button type="button" onClick={() => handleButtonClick(item)}>
                 장바구니 추가
@@ -78,7 +99,7 @@ function HomePage() {
             </Li>
           ))}
         </Ul>
-      </main>
+      </Main>
     </div>
   );
 }
@@ -92,8 +113,12 @@ const Header = styled.header`
   border-bottom: 3px solid #e74c3c;
 `;
 
-const Ul = styled.ul`
+const Main = styled.main`
   padding: 0 1rem;
+`;
+
+const Ul = styled.ul`
+  padding: 0;
 `;
 
 const Li = styled.li`
