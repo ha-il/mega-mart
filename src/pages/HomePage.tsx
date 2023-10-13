@@ -24,20 +24,37 @@ function HomePage() {
 
   // 유틸:
   const addElementLast = <T,>(array: T[], elem: T) => [...array, elem];
-
   // 계산:
   // C: 카트에 대한 구조를 알아야 함
   const addItem = (cart: Item[], item: Item) => addElementLast(cart, item);
-
   // 액션: DOM을 변경하기 때문에
   const addItemToCart = (item: Item) => {
+    if (cartState.find((element) => element.name === item.name)) return;
     const shoppingCart = addItem(cartState, item);
     setCartState(shoppingCart);
   };
-
-  // 액션: 하위 함수가 액션이기 때문에
-  const handleButtonClick = (item: Item) => {
+  // 액션: 하위 함수가 DOM을 변경하는 액션이기 때문에
+  const handleAddButtonClick = (item: Item) => {
     addItemToCart(item);
+  };
+
+  // 유틸:
+  const removeItem = <T,>(array: T[], idx: number) => {
+    const copy = [...array];
+    copy.splice(idx, 1);
+    return copy;
+  };
+  // 계산:
+  // const removeItem = (cart: Item[], name: string) =>
+  // cart.filter((item) => item.name !== name);
+  // 액션: DOM을 변경하기 때문에
+  const removeItemByIndex = (index: number) => {
+    const shoppingCart = removeItem(cartState, index);
+    setCartState(shoppingCart);
+  };
+  // 액션: 하위 함수가 DOM을 변경하는 액션이기 때문에
+  const handleRemoveButtonClick = (index: number) => {
+    removeItemByIndex(index);
   };
 
   // 계산: C I B
@@ -46,21 +63,18 @@ function HomePage() {
   // B: 합계를 결정하는 비즈니스 규칙을 알아야 함(?)
   const calcTotal = (cart: Item[]) =>
     cart.reduce((acc, cur) => acc + cur.price, 0);
-
   // 액션: cart를 참조하고 있으므로
   const cartTotal = calcTotal(cartState);
 
   // 계산:
   // B: 세금 계산이라는 비즈니스 규칙을 알아야 함
   const calcTax = (price: number) => price * 0.1;
-
   // 액션: DOM을 변경하기 때문에
   const updateTaxDom = (total: number) => calcTax(total);
 
   // 계산:
   // B: 2만원 이상 무료배송이라는 비즈니스 규칙을 알아야 함
   const getsFreeShipping = (cart: Item[]) => calcTotal(cart) >= 20000;
-
   // 액션: DOM을 변경하기 때문에
   const updateShippingIcons = (cart: Item[]) => getsFreeShipping([...cart]);
 
@@ -84,7 +98,25 @@ function HomePage() {
         </div>
       </Header>
       <Main>
-        <h2>2만원 이상 구매시 무료 배송!</h2>
+        <h2>장바구니: 2만원 이상 구매시 무료 배송!</h2>
+        <Ul>
+          {cartState.map((item, index) => (
+            <Li key={item.id}>
+              <div>
+                <span>{item.emoji}</span>
+                <span>{item.name}</span>
+                <span>{item.price}원</span>
+              </div>
+              <Button
+                type="button"
+                onClick={() => handleRemoveButtonClick(index)}
+              >
+                삭제
+              </Button>
+            </Li>
+          ))}
+        </Ul>
+        <h2>상품 목록</h2>
         <Ul>
           {items.map((item) => (
             <Li key={item.id}>
@@ -93,7 +125,7 @@ function HomePage() {
                 <span>{item.name}</span>
                 <span>{item.price}원</span>
               </div>
-              <Button type="button" onClick={() => handleButtonClick(item)}>
+              <Button type="button" onClick={() => handleAddButtonClick(item)}>
                 장바구니 추가
               </Button>
             </Li>
