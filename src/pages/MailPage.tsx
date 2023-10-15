@@ -1,14 +1,13 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
+import { push } from "../utils/arrayUtils";
 
 function MailPage() {
   const [mailingList, setMailingList] = useState<string[]>([]);
   const [enterdEmailAddress, setEnterdEmailAddress] = useState("");
 
   // 계산:
-  const addContact = (emailList: string[], emailAddress: string) => [
-    ...emailList,
-    emailAddress,
-  ];
+  const addContact = (emailList: string[], emailAddress: string) =>
+    push(emailList, emailAddress);
 
   // 액션:
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
