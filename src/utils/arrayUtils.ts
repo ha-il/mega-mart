@@ -34,5 +34,12 @@ export const pop = <T>(array: T[]) => {
   };
 };
 
-// 예: push 메서드
+// push 메서드의 카피-온-라이트 버전
 export const push = <T>(array: T[], elem: T) => [...array, elem];
+
+// 배열 항목을 카피-온-라이트 방식으로 설정하는 arraySet 함수
+export const arraySet = <T>(array: T[], idx: number, value: T) => {
+  const arrayCopy = [...array];
+  arrayCopy[idx] = value;
+  return arrayCopy;
+};
