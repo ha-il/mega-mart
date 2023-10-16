@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import CartItem from "../components/CartItem";
+import Button from "../components/Button";
+import Li from "../components/Li";
+import Item from "../interfaces/Item";
 
 /* 핵심
   1. DOM 업데이트와 비즈니스 규칙은 분리되어야 한다.
@@ -11,12 +15,6 @@ import styled from "styled-components";
   1. 암묵적 입력과 출력은 적을수록 좋다.
   2. 설계는 엉켜있는 코드를 푸는 것이다.
 */
-interface Item {
-  id: number;
-  name: string;
-  emoji: string;
-  price: number;
-}
 
 function HomePage() {
   const [items, setItems] = useState<Item[]>([]);
@@ -101,19 +99,11 @@ function HomePage() {
         <h2>장바구니: 2만원 이상 구매시 무료 배송!</h2>
         <Ul>
           {cartState.map((item, index) => (
-            <Li key={item.id}>
-              <div>
-                <span>{item.emoji}</span>
-                <span>{item.name}</span>
-                <span>{item.price}원</span>
-              </div>
-              <Button
-                type="button"
-                onClick={() => handleRemoveButtonClick(index)}
-              >
-                삭제
-              </Button>
-            </Li>
+            <CartItem
+              item={item}
+              index={index}
+              onRemoveButtonClick={handleRemoveButtonClick}
+            />
           ))}
         </Ul>
         <h2>상품 목록</h2>
@@ -151,30 +141,4 @@ const Main = styled.main`
 
 const Ul = styled.ul`
   padding: 0;
-`;
-
-const Li = styled.li`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-  background-color: #ecf0f1;
-  padding: 1rem;
-  border-radius: 0.5rem;
-
-  & span {
-    margin-right: 1rem;
-  }
-`;
-
-const Button = styled.button`
-  border: none;
-  border: 2px solid #e74c3c;
-  background-color: #e74c3c;
-  color: #fff;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  &:hover {
-    color: #ecf0f1;
-    background-color: #c0392b;
-  }
 `;
