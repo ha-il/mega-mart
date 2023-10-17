@@ -4,6 +4,7 @@ import CartItem from "../components/CartItem";
 import Button from "../components/Button";
 import Li from "../components/Li";
 import Item from "../interfaces/Item";
+import ItemInCart from "../interfaces/CartItem";
 
 /* 핵심
   1. DOM 업데이트와 비즈니스 규칙은 분리되어야 한다.
@@ -18,13 +19,16 @@ import Item from "../interfaces/Item";
 
 function HomePage() {
   const [items, setItems] = useState<Item[]>([]);
-  const [cartState, setCartState] = useState<Item[]>([]);
+  const [cartState, setCartState] = useState<ItemInCart[]>([]);
 
   // 유틸:
   const addElementLast = <T,>(array: T[], elem: T) => [...array, elem];
   // 계산:
   // C: 카트에 대한 구조를 알아야 함
-  const addItem = (cart: Item[], item: Item) => addElementLast(cart, item);
+  const addItem = (cart: ItemInCart[], item: Item): ItemInCart[] => {
+    const quantityAddedItem = { ...item, quantity: 1 };
+    return addElementLast(cart, quantityAddedItem);
+  };
   // 액션: DOM을 변경하기 때문에
   const addItemToCart = (item: Item) => {
     if (cartState.find((element) => element.name === item.name)) return;
@@ -76,6 +80,21 @@ function HomePage() {
   // 액션: DOM을 변경하기 때문에
   const updateShippingIcons = (cart: Item[]) => getsFreeShipping([...cart]);
 
+  // 계산:
+  const ChangeQuantity = (cartItem: ItemInCart, newQuantity: number) => {
+    const newCartItem = { ...cartItem };
+    newCartItem.quantity = newQuantity;
+    return newCartItem;
+  };
+  // 액션:
+  const handleInputChange = (value: number, index: number) => {
+    const newQuantity = Number(value);
+    const shoppingCart = [...cartState];
+    const selectedItem = shoppingCart[index];
+    shoppingCart[index] = ChangeQuantity(selectedItem, newQuantity);
+    setCartState(shoppingCart);
+  };
+
   useEffect(() => {
     const getItems = async () => {
       const response = await fetch("http://localhost:5000/items");
@@ -102,7 +121,9 @@ function HomePage() {
             <CartItem
               item={item}
               index={index}
+              key={item.name}
               onRemoveButtonClick={handleRemoveButtonClick}
+              onInputChange={handleInputChange}
             />
           ))}
         </Ul>
